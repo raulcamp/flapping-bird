@@ -1,6 +1,7 @@
 """Flapping Bird constants"""
 # Dimensions
 WIDTH, HEIGHT = 1000, 1000
+BIRD_SIZE = 50
 
 # Colors
 WHITE = (255, 255, 255)
@@ -14,3 +15,7 @@ GREEN = (0, 240, 0)
 YELLOW = (240, 240, 0)
 ORANGE = (240, 160, 0)
 PURPLE = (160, 0, 240)
+
+# Constants
+Y_GRAVITY = 0.5
+JUMP_HEIGHT = 10
