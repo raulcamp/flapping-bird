@@ -114,10 +114,6 @@ def main():
     distance = 100
 
     while True:
-        print()
-        for p in game.pipes:
-            print(p)
-        print()
         # Fill the background
         draw_background(screen)
 
@@ -139,7 +135,8 @@ def main():
                 pass
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                pass
+                jumping_start = True
+                y_velocity = JUMP_HEIGHT
 
         # Check for key presses
         keys = pygame.key.get_pressed()
@@ -164,7 +161,11 @@ def main():
             game.update_pipes()
 
         if game.pipe_collision():
-            return
+            while True:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
 
         # Draw the grid and current state
         game.draw(screen)
