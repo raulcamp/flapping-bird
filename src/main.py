@@ -5,9 +5,13 @@ from entities import Point, Object, Bird
 from constants import (
     WIDTH,
     HEIGHT,
+    GROUND_HEIGHT,
     BIRD_SIZE,
     WHITE,
     BLACK,
+    SKY_BLUE,
+    GRASS_GREEN,
+    BIRD_YELLOW,
     Y_GRAVITY,
     JUMP_HEIGHT,
 )
@@ -20,7 +24,7 @@ class Game:
         self.height = height
         position = Point(self.width // 3 - BIRD_SIZE // 2,
                          self.height // 2 - BIRD_SIZE // 2)
-        self.bird = Bird(position, BIRD_SIZE, BIRD_SIZE, BLACK)
+        self.bird = Bird(position, BIRD_SIZE, BIRD_SIZE, BIRD_YELLOW)
 
     def update(self):
         """Update game state"""
@@ -31,12 +35,20 @@ class Game:
         x, y = self.bird.get_pos()
         width, height = self.bird.get_width(), self.bird.get_height()
         color = self.bird.get_color()
-        draw_rect(screen, color, x, y, width, height)
+        draw_rect(screen, BLACK, x, y, width, height)
+        draw_rect(screen, color, x+3, y+3, width-6, height-6)
 
 
 def draw_rect(screen, color, x, y, width, height):
     """Draws a Pygame rectangle"""
     pygame.draw.rect(screen, color, (x, y, width, height))
+
+
+def draw_background(screen):
+    """Draws a background"""
+    pygame.draw.rect(screen, SKY_BLUE, (0, 0, WIDTH, GROUND_HEIGHT))
+    pygame.draw.rect(screen, GRASS_GREEN,
+                     (0, GROUND_HEIGHT, WIDTH, HEIGHT // 5))
 
 
 def main():
@@ -54,7 +66,7 @@ def main():
 
     while True:
         # Fill the background
-        screen.fill(WHITE)
+        draw_background(screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
