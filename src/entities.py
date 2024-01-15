@@ -36,7 +36,7 @@ class Bird(Object):
         self.coordinates = Point(x, y)
 
     def move(self, dx, dy):
-        """Moves the bird vertically"""
+        """Moves the bird"""
         x, y = self.coordinates.get()
         self.set_pos((x + dx, y + dy))
 
@@ -50,6 +50,37 @@ class Bird(Object):
 
     def get_color(self):
         """Returns the color of the bird"""
+        return self.color
+
+
+@dataclass
+class Pipe(Object):
+    """Represents a Pipe"""
+
+    def get_pos(self):
+        """Returns the position of the pipe"""
+        return self.coordinates.get()
+
+    def set_pos(self, coordinates):
+        """Sets the position of the pipe"""
+        x, y = coordinates
+        self.coordinates = Point(x, y)
+
+    def move(self, dx, dy):
+        """Moves the pipe"""
+        x, y = self.coordinates.get()
+        self.set_pos((x + dx, y + dy))
+
+    def get_width(self):
+        """Returns the width of the pipe"""
+        return self.width
+
+    def get_height(self):
+        """Returns the height of the pipe"""
+        return self.height
+
+    def get_color(self):
+        """Returns the color of the pipe"""
         return self.color
 
 
