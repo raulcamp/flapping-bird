@@ -1,17 +1,26 @@
-"""Game of Life"""
+"""Flapping Bird"""
 import sys
 import pygame
+from entities import Point, Object, Bird
 from constants import (
     WIDTH,
     HEIGHT,
+    BIRD_SIZE,
     WHITE,
+    BLACK,
+    Y_GRAVITY,
+    JUMP_HEIGHT,
 )
 
 
 class Game:
     """Represents a game"""
-    def __init__(self):
-        pass
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        position = Point(self.width // 3 - BIRD_SIZE // 2,
+                         self.height // 2 - BIRD_SIZE // 2)
+        self.bird = Bird(position, BIRD_SIZE, BIRD_SIZE, BLACK)
 
     def update(self):
         """Update game state"""
@@ -19,18 +28,15 @@ class Game:
 
     def draw(self, screen):
         """Draw the current game objects"""
-        pass
+        x, y = self.bird.get_pos()
+        width, height = self.bird.get_width(), self.bird.get_height()
+        color = self.bird.get_color()
+        draw_rect(screen, color, x, y, width, height)
 
 
-def draw_rect(screen, obj):
+def draw_rect(screen, color, x, y, width, height):
     """Draws a Pygame rectangle"""
-    x, y, size = (obj.x * obj.size) + 1, (obj.y * obj.size) + 1, obj.size - 1
-    pygame.draw.rect(screen, obj.color, (x, y, size, size))
-
-
-def draw_grid(screen):
-    """Draws a grid"""
-    pass
+    pygame.draw.rect(screen, color, (x, y, width, height))
 
 
 def main():
@@ -41,13 +47,15 @@ def main():
     # Create a clock object
     clock = pygame.time.Clock()
     # Create a Game object
-    game = Game()
+    game = Game(WIDTH, HEIGHT)
 
-    # Fill the background
-    screen.fill(WHITE)
-    draw_grid(screen)
-    pygame.display.update()
+    jumping_start = False
+    y_velocity = JUMP_HEIGHT
+
     while True:
+        # Fill the background
+        screen.fill(WHITE)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -55,6 +63,9 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     pass
+                if event.key == pygame.K_SPACE:
+                    jumping_start = True
+                    y_velocity = JUMP_HEIGHT
                 if event.key == pygame.K_1:
                     pass
                 if event.key == pygame.K_2:
@@ -75,6 +86,10 @@ def main():
             pass
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             pass
+
+        if jumping_start:
+            game.bird.move(0, -y_velocity)
+            y_velocity -= Y_GRAVITY
 
         # Draw the grid and current state
         game.draw(screen)
