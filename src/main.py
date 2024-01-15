@@ -1,15 +1,16 @@
 """Flapping Bird"""
 import sys
 import pygame
-from entities import Point, Object, Bird
+import random
+from entities import Point, Bird, Pipe
 from constants import (
     WIDTH,
     HEIGHT,
     GROUND_HEIGHT,
     BIRD_SIZE,
-    WHITE,
     BLACK,
     SKY_BLUE,
+    GREEN,
     GRASS_GREEN,
     BIRD_YELLOW,
     Y_GRAVITY,
@@ -25,10 +26,35 @@ class Game:
         position = Point(self.width // 3 - BIRD_SIZE // 2,
                          self.height // 2 - BIRD_SIZE // 2)
         self.bird = Bird(position, BIRD_SIZE, BIRD_SIZE, BIRD_YELLOW)
+        self.pipes = []
 
     def update(self):
         """Update game state"""
         pass
+
+    def add_pipe_barrier(self):
+        """Adds two pipes forming a barrier"""
+        space_height = random.randint(200, 500)
+        top_pipe = Pipe(Point(WIDTH, 0), 100, space_height, GREEN)
+        bot_pipe = Pipe(Point(WIDTH, space_height + 200),
+                        100, 800 - space_height + 200, GREEN)
+        self.pipes.append((top_pipe, bot_pipe))
+
+    def update_pipes(self):
+        """Updates the pipes positions"""
+        for top, bot in self.pipes:
+            x, _ = top.get_pos()
+            if x < -top.get_width():
+                self.pipes.remove((top, bot))
+            else:
+                top.move(-5, 0)
+                bot.move(-5, 0)
+
+    def pipe_collision(self):
+        for top, bot in self.pipes:
+            if collision(self.bird, top) or collision(self.bird, bot):
+                return True
+        return False
 
     def draw(self, screen):
         """Draw the current game objects"""
@@ -37,6 +63,28 @@ class Game:
         color = self.bird.get_color()
         draw_rect(screen, BLACK, x, y, width, height)
         draw_rect(screen, color, x+3, y+3, width-6, height-6)
+
+        for top, bot in self.pipes:
+            x, y = top.get_pos()
+            width, height = top.get_width(), top.get_height()
+            color = top.get_color()
+            draw_rect(screen, color, x, y, width, height)
+            x, y = bot.get_pos()
+            width, height = bot.get_width(), bot.get_height()
+            color = bot.get_color()
+            draw_rect(screen, color, x, y, width, height)
+
+
+def collision(obj1, obj2):
+    """Checks if two objects collide"""
+    obj1x, obj1y = obj1.get_pos()
+    obj2x, obj2y = obj2.get_pos()
+    if obj1x < obj2x + obj2.width \
+            and obj1x + obj1.width > obj2x:
+        if obj1y < obj2y + obj2.height \
+                and obj1y + obj1.height > obj2y:
+            return True
+    return False
 
 
 def draw_rect(screen, color, x, y, width, height):
@@ -63,8 +111,13 @@ def main():
 
     jumping_start = False
     y_velocity = JUMP_HEIGHT
+    distance = 100
 
     while True:
+        print()
+        for p in game.pipes:
+            print(p)
+        print()
         # Fill the background
         draw_background(screen)
 
@@ -102,6 +155,16 @@ def main():
         if jumping_start:
             game.bird.move(0, -y_velocity)
             y_velocity -= Y_GRAVITY
+
+            if distance == 100:
+                game.add_pipe_barrier()
+            distance -= 1
+            if distance <= 0:
+                distance = 100
+            game.update_pipes()
+
+        if game.pipe_collision():
+            return
 
         # Draw the grid and current state
         game.draw(screen)
